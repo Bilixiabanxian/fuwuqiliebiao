@@ -1,74 +1,377 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>服务器列表</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 0.75rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            line-height: 1.5;
         }
-        .search-input::placeholder {
-            color: #6b7280;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
+        /* 头部样式 */
+        .header {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .header-title p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        .server-icon {
+            background: var(--primary);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+        .status-legend {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .status-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+        }
+        .status-dot.online { background: var(--success); }
+        .status-dot.maintenance { background: var(--warning); }
+        .status-dot.offline { background: var(--danger); }
+        /* 搜索和过滤 */
+        .search-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+        }
+        .search-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .search-filters {
+                flex-direction: row;
+            }
+        }
+        .search-group {
+            position: relative;
+            flex: 1;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+        /* 服务器卡片 - 正方形布局 */
+        .servers-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        .server-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        .server-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .server-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .server-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .server-title {
+            flex: 1;
+        }
+        .server-title h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .server-owner {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            gap: 0.25rem;
+        }
+        .status-badge.online {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+        .status-badge.maintenance {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+        }
+        .status-badge.offline {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+        }
+        .server-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+        .info-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+        .room-number {
+            background: var(--gray-100);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+        .ping-value {
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: monospace;
+        }
+        .ping-value.low { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .ping-value.medium { background: rgba(245, 158, 11, 0.1); color: #92400e; }
+        .ping-value.high { background: rgba(239, 68, 68, 0.1); color: #991b1b; }
+        /* 交流群按钮 */
         .qq-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
             background: #12B76A;
             background: linear-gradient(135deg, #12B76A 0%, #059669 100%);
-            box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.3);
-            transition: all 0.2s ease;
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: auto;
         }
         .qq-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px 0 rgba(34, 197, 94, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
         }
-        .qq-button:active {
-            transform: translateY(0);
+        /* 无结果状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .empty-icon {
+            width: 6rem;
+            height: 6rem;
+            margin: 0 auto 1rem;
+            background: var(--gray-100);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+        }
+        .empty-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        .empty-text {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+        /* 页脚 */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
-    <div class="max-w-6xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">服务器列表</h1>
-            <p class="text-gray-600">查看优质服务器</p>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="mb-8">
-            <div class="relative max-w-md mx-auto">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="header-title">
+                        <div class="server-icon">
+                            <i data-lucide="server" class="lucide-icon" style="color: white; width: 24px; height: 24px;"></i>
+                        </div>
+                        <div>
+                            <h1>服务器列表</h1>
+                            <p>查看所有可用服务器状态</p>
+                        </div>
+                    </div>
+                    <div class="status-legend">
+                        <div class="status-item">
+                            <div class="status-dot online"></div>
+                            <span>在线</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot maintenance"></div>
+                            <span>维护</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot offline"></div>
+                            <span>离线</span>
+                        </div>
+                    </div>
                 </div>
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    placeholder="搜索服务器..." 
-                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-gray-900 placeholder-gray-500 search-input"
-                >
+            </div>
+        </header>
+        <!-- 搜索 -->
+        <div class="search-container">
+            <div class="search-filters">
+                <div class="search-group">
+                    <i data-lucide="search" class="lucide-icon search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="搜索服务器名称...">
+                </div>
             </div>
         </div>
-
-        <!-- Server List -->
-        <div id="serverList" class="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
-            <!-- Server Card will be inserted here by JavaScript -->
-        </div>
-
-        <!-- QQ Button -->
-        <div class="text-center mt-8">
-            <a href="https://qm.qq.com/q/h76HwrvbS8" target="_blank" class="inline-flex items-center gap-3 px-6 py-3 rounded-xl qq-button text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.5 2H3.5C2.67 2 2 2.67 2 3.5v17c0 .83.67 1.5 1.5 1.5h17c.83 0 1.5-.67 1.5-1.5v-17c0-.83-.67-1.5-1.5-1.5zM8.5 19c-1.38 0-2.5-1.12-2.5-2.5S7.12 14 8.5 14s2.5 1.12 2.5 2.5S9.88 19 8.5 19zm7 0c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    <path d="M18.5 7h-13c-.83 0-1.5-.67-1.5-1.5S4.67 4 5.5 4h13c.83 0 1.5.67 1.5 1.5S19.33 7 18.5 7z"/>
-                </svg>
-                想加入菜单？加入QQ群交流
-            </a>
+        <!-- 服务器列表 -->
+        <div id="serversGrid" class="servers-grid">
+            <!-- 服务器卡片将通过JavaScript动态生成 -->
         </div>
     </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 服务器列表. 作者: <a href="https://qm.qq.com/q/h76HwrvbS8" target="_blank">幻方者</a></p>
+        </div>
+    </footer>
 
     <script>
         // 服务器数据
@@ -80,101 +383,132 @@
                 version: '网易基岩版',
                 status: '离线',
                 delay: '服务器未开启',
-                roomNumber: '服务器未开启'
+                roomNumber: '服务器未开启',
+                qqGroup: 'https://qm.qq.com/q/kJz8JRmoIU'
             }
         ];
 
         // 获取DOM元素
         const searchInput = document.getElementById('searchInput');
-        const serverList = document.getElementById('serverList');
+        const serversGrid = document.getElementById('serversGrid');
 
         // 状态颜色映射函数
         function getStatusColor(status) {
             switch (status) {
+                case 'online':
                 case '在线':
-                    return 'bg-green-100 text-green-800';
-                case '离线':
-                    return 'bg-red-100 text-red-800';
+                    return 'online';
+                case 'maintenance':
                 case '维护中':
-                    return 'bg-yellow-100 text-yellow-800';
+                    return 'maintenance';
+                case 'offline':
+                case '离线':
+                    return 'offline';
                 default:
-                    return 'bg-gray-100 text-gray-800';
+                    return 'offline';
             }
         }
 
         // 渲染服务器列表
-        function renderServers(servers) {
-            serverList.innerHTML = '';
-            
-            if (servers.length === 0) {
-                serverList.innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-xl shadow-lg">
-                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <h3 class="text-lg font-medium text-gray-900 mb-1">未找到服务器</h3>
-                        <p class="text-gray-500">尝试调整您的搜索关键词</p>
+        function renderServers() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredServers = servers.filter(server => {
+                const matchesSearch = server.name.toLowerCase().includes(searchTerm) ||
+                                    server.owner.toLowerCase().includes(searchTerm) ||
+                                    server.version.toLowerCase().includes(searchTerm) ||
+                                    (server.roomNumber && server.roomNumber.toLowerCase().includes(searchTerm));
+                return matchesSearch;
+            });
+
+            // 清空现有内容
+            serversGrid.innerHTML = '';
+
+            if (filteredServers.length === 0) {
+                serversGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i data-lucide="search" class="lucide-icon"></i>
+                        </div>
+                        <h3 class="empty-title">未找到匹配的服务器</h3>
+                        <p class="empty-text">尝试调整搜索条件</p>
                     </div>
                 `;
                 return;
             }
 
-            servers.forEach(server => {
-                // 房间号部分，如果为null则不显示
+            // 生成服务器卡片
+            filteredServers.forEach(server => {
+                // 获取延迟颜色
+                let pingClass = 'low';
+                if (server.delay >= 100 && server.delay < 200) {
+                    pingClass = 'medium';
+                } else if (server.delay >= 200) {
+                    pingClass = 'high';
+                }
+
+                // 构建房间号信息
                 let roomNumberHtml = '';
                 if (server.roomNumber) {
                     roomNumberHtml = `
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <div class="text-sm font-medium text-gray-500 mb-1">房间号</div>
-                            <div class="text-lg font-semibold text-gray-900">${server.roomNumber}</div>
+                        <div class="info-item">
+                            <span class="info-label">房间号</span>
+                            <span class="info-value room-number">${server.roomNumber}</span>
                         </div>
                     `;
                 }
 
+                // 构建QQ群按钮
+                let qqButtonHtml = '';
+                if (server.qqGroup) {
+                    qqButtonHtml = `
+                        <a href="${server.qqGroup}" target="_blank" class="qq-button">
+                            <i data-lucide="message-circle" class="lucide-icon" style="width: 16px; height: 16px;"></i>
+                            加入交流群
+                        </a>
+                    `;
+                }
+
                 const serverCard = document.createElement('div');
-                serverCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200';
+                serverCard.className = 'server-card';
                 serverCard.innerHTML = `
-                    <div class="p-6">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-800 mb-1">${server.name}</h3>
-                                <p class="text-gray-600">服主: ${server.owner}</p>
+                    <div class="server-content">
+                        <div class="server-header">
+                            <div class="server-title">
+                                <h3>${server.name}</h3>
+                                <p class="server-owner">服主: ${server.owner}</p>
                             </div>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(server.status)}">
-                                ${server.status}
+                            <span class="status-badge ${getStatusColor(server.status)}">
+                                <i data-lucide="${server.status === '在线' || server.status === 'online' ? 'check' : server.status === '维护中' || server.status === 'maintenance' ? 'refresh-cw' : 'x'}" class="lucide-icon"></i>
+                                ${server.status === 'online' ? '在线' : server.status === 'maintenance' ? '维护中' : server.status === 'offline' ? '离线' : server.status}
                             </span>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div class="server-info">
                             ${roomNumberHtml}
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500 mb-1">延迟</div>
-                                <div class="text-lg font-semibold text-gray-900">${server.delay}</div>
+                            <div class="info-item">
+                                <span class="info-label">延迟</span>
+                                <span class="info-value ping-value ${pingClass}">${server.delay}ms</span>
                             </div>
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500 mb-1">版本</div>
-                                <div class="text-lg font-semibold text-gray-900">${server.version}</div>
+                            <div class="info-item">
+                                <span class="info-label">版本</span>
+                                <span class="info-value">${server.version}</span>
                             </div>
                         </div>
+                        ${qqButtonHtml}
                     </div>
                 `;
-                serverList.appendChild(serverCard);
+                serversGrid.appendChild(serverCard);
             });
+
+            // 初始化Lucide图标
+            lucide.createIcons();
         }
 
-        // 搜索功能
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filteredServers = servers.filter(server => 
-                server.name.toLowerCase().includes(searchTerm) ||
-                server.owner.toLowerCase().includes(searchTerm) ||
-                server.version.toLowerCase().includes(searchTerm)
-            );
-            renderServers(filteredServers);
-        });
+        // 事件监听
+        searchInput.addEventListener('input', renderServers);
 
-        // 初始化渲染
-        renderServers(servers);
+        // 初始化
+        renderServers();
     </script>
 </body>
 </html>
+```
