@@ -13,6 +13,19 @@
         .search-input::placeholder {
             color: #6b7280;
         }
+        .qq-button {
+            background: #12B76A;
+            background: linear-gradient(135deg, #12B76A 0%, #059669 100%);
+            box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.3);
+            transition: all 0.2s ease;
+        }
+        .qq-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px 0 rgba(34, 197, 94, 0.4);
+        }
+        .qq-button:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
@@ -44,6 +57,17 @@
         <div id="serverList" class="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
             <!-- Server Card will be inserted here by JavaScript -->
         </div>
+
+        <!-- QQ Button -->
+        <div class="text-center mt-8">
+            <a href="https://qm.qq.com/q/h76HwrvbS8" target="_blank" class="inline-flex items-center gap-3 px-6 py-3 rounded-xl qq-button text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.5 2H3.5C2.67 2 2 2.67 2 3.5v17c0 .83.67 1.5 1.5 1.5h17c.83 0 1.5-.67 1.5-1.5v-17c0-.83-.67-1.5-1.5-1.5zM8.5 19c-1.38 0-2.5-1.12-2.5-2.5S7.12 14 8.5 14s2.5 1.12 2.5 2.5S9.88 19 8.5 19zm7 0c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    <path d="M18.5 7h-13c-.83 0-1.5-.67-1.5-1.5S4.67 4 5.5 4h13c.83 0 1.5.67 1.5 1.5S19.33 7 18.5 7z"/>
+                </svg>
+                想加入菜单？加入QQ群交流
+            </a>
+        </div>
     </div>
 
     <script>
@@ -54,9 +78,9 @@
                 name: '枪械资源服',
                 owner: '枪械资源服',
                 version: '网易基岩版',
-                status: '离线',  // 改为离线
+                status: '离线',
                 delay: '120ms',
-                roomNumber: '服务器已离线'
+                roomNumber: 'GJZYF001'
             }
         ];
 
