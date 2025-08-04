@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务器列表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .search-input::placeholder {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">服务器列表</h1>
+            <p class="text-gray-600">管理您的服务器连接</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-8">
+            <div class="relative max-w-md mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="搜索服务器..." 
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-gray-900 placeholder-gray-500 search-input"
+                >
+            </div>
+        </div>
+
+        <!-- Server List -->
+        <div id="serverList" class="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
+            <!-- Server Card will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // 服务器数据
+        const servers = [
+            {
+                id: 1,
+                name: '枪械资源服',
+                owner: '枪械资源服',
+                version: '网易基岩版',
+                status: '离线',  // 改为离线
+                delay: '120ms',
+                roomNumber: '服务器已离线'
+            }
+        ];
+
+        // 获取DOM元素
+        const searchInput = document.getElementById('searchInput');
+        const serverList = document.getElementById('serverList');
+
+        // 状态颜色映射函数
+        function getStatusColor(status) {
+            switch (status) {
+                case '在线':
+                    return 'bg-green-100 text-green-800';
+                case '离线':
+                    return 'bg-red-100 text-red-800';
+                case '维护中':
+                    return 'bg-yellow-100 text-yellow-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // 渲染服务器列表
+        function renderServers(servers) {
+            serverList.innerHTML = '';
+            
+            if (servers.length === 0) {
+                serverList.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-xl shadow-lg">
+                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">未找到服务器</h3>
+                        <p class="text-gray-500">尝试调整您的搜索关键词</p>
+                    </div>
+                `;
+                return;
+            }
+
+            servers.forEach(server => {
+                // 房间号部分，如果为null则不显示
+                let roomNumberHtml = '';
+                if (server.roomNumber) {
+                    roomNumberHtml = `
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-sm font-medium text-gray-500 mb-1">房间号</div>
+                            <div class="text-lg font-semibold text-gray-900">${server.roomNumber}</div>
+                        </div>
+                    `;
+                }
+
+                const serverCard = document.createElement('div');
+                serverCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200';
+                serverCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-1">${server.name}</h3>
+                                <p class="text-gray-600">服主: ${server.owner}</p>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(server.status)}">
+                                ${server.status}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            ${roomNumberHtml}
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500 mb-1">延迟</div>
+                                <div class="text-lg font-semibold text-gray-900">${server.delay}</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500 mb-1">版本</div>
+                                <div class="text-lg font-semibold text-gray-900">${server.version}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                serverList.appendChild(serverCard);
+            });
+        }
+
+        // 搜索功能
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredServers = servers.filter(server => 
+                server.name.toLowerCase().includes(searchTerm) ||
+                server.owner.toLowerCase().includes(searchTerm) ||
+                server.version.toLowerCase().includes(searchTerm)
+            );
+            renderServers(filteredServers);
+        });
+
+        // 初始化渲染
+        renderServers(servers);
+    </script>
+</body>
+</html>
