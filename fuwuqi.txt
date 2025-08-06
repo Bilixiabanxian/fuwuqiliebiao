@@ -1,1 +1,1 @@
-{txt:枪械资源服,serve:枪械资源服,room:服务器未开启,delay:45,version:网易基岩版,group:https://qm.qq.com/q/q190J8W8X8,state:离线}
+{txt:枪械资源服,serve:枪械资源服,room:服务器未开启,delay:0,version:网易基岩版,group:https://qm.qq.com/q/q190J8W8X8,state:离线}
